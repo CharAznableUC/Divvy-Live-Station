@@ -15,14 +15,14 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const campusBounds = L.latLngBounds(
-      L.latLng(41.782, -87.620),  // Southwest corner (expanded)
-      L.latLng(41.803, -87.580)   // Northeast corner (further east)
+      L.latLng(41.782, -87.620),
+      L.latLng(41.803, -87.580)
     );
 
     const map = L.map('map', {
       maxBounds: campusBounds,
       maxBoundsViscosity: 1.0
-    }).setView([41.7925, -87.6000], 14); // shifted east a bit
+    }).setView([41.7925, -87.6000], 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -48,7 +48,9 @@
 
                 const popupContent = `
                   <strong>${station.name}</strong><br>
-                  🚲 Available: ${status.num_bikes_available}<br>
+                  🚲 Classics: ${status.num_bikes_available}<br>
+                  ⚡ E-bikes: ${status.num_ebikes_available ?? 'N/A'}<br>
+                  🛴 Scooters: ${status.num_scooters_available ?? 'N/A'}<br>
                   🔌 Docks: ${status.num_docks_available}<br>
                 `;
 
