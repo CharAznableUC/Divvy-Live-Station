@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Divvy Live Stations Map</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // 创建地图对象，设置初始中心点和缩放级别
+    const map = L.map('map').setView([41.8781, -87.6298], 12); // Chicago
+
+    // 添加底图（OpenStreetMap）
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 获取 Divvy 实时站点数据
+    fetch("https://gbfs.divvybikes.com/gbfs/en/station_status.json")
+      .then(response => response.json())
+      .then(statusData => {
+        fetch("https://gbfs.divvybikes.com/gbfs/en/station_information.json")
+          .then(response => response.json())
+          .then(infoData => {
+            const statusDict = {};
+            statusData.data.stations.forEach(s => statusDict[s.station_id] = s);
+
+            infoData.data.stations.forEach(station => {
+              const status = statusDict[station.station_id];
+              if (!status) return;
+
+              const popupContent = `
+                <strong>${station.name}</strong><br>
+                🚲 Available: ${status.num_bikes_available}<br>
+                🔌 Docks: ${status.num_docks_available}<br>
+              `;
+
+              L.circleMarker([station.lat, station.lon], {
+                radius: 6,
+                color: status.num_bikes_available > 0 ? 'green' : 'red',
+                fillOpacity: 0.8
+              }).addTo(map).bindPopup(popupContent);
+            });
+          });
+      });
+  </script>
+</body>
+</html>
