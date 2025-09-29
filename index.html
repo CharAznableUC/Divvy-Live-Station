@@ -15,14 +15,14 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const campusBounds = L.latLngBounds(
-      L.latLng(41.785, -87.615),  // Southwest corner (approx. Woodlawn Ave & 61st)
-      L.latLng(41.800, -87.595)   // Northeast corner (approx. 55th & Lake Shore)
+      L.latLng(41.782, -87.620),  // Southwest corner (expanded)
+      L.latLng(41.803, -87.580)   // Northeast corner (further east)
     );
 
     const map = L.map('map', {
       maxBounds: campusBounds,
       maxBoundsViscosity: 1.0
-    }).setView([41.7925, -87.6035], 15);
+    }).setView([41.7925, -87.6000], 14); // shifted east a bit
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
