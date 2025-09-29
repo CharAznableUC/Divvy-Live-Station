@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Divvy Live Stations Map</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; margin: 0; padding: 0; }
+    body { margin: 0; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const campusBounds = L.latLngBounds(
+      L.latLng(41.785, -87.615),  // Southwest corner (approx. Woodlawn Ave & 61st)
+      L.latLng(41.800, -87.595)   // Northeast corner (approx. 55th & Lake Shore)
+    );
+
+    const map = L.map('map', {
+      maxBounds: campusBounds,
+      maxBoundsViscosity: 1.0
+    }).setView([41.7925, -87.6035], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let markersLayer = L.layerGroup().addTo(map);
+
+    function fetchAndUpdateStations() {
+      fetch("https://gbfs.divvybikes.com/gbfs/en/station_status.json")
+        .then(response => response.json())
+        .then(statusData => {
+          fetch("https://gbfs.divvybikes.com/gbfs/en/station_information.json")
+            .then(response => response.json())
+            .then(infoData => {
+              const statusDict = {};
+              statusData.data.stations.forEach(s => statusDict[s.station_id] = s);
+
+              markersLayer.clearLayers();
+
+              infoData.data.stations.forEach(station => {
+                const status = statusDict[station.station_id];
+                if (!status) return;
+
+                const popupContent = `
+                  <strong>${station.name}</strong><br>
+                  🚲 Available: ${status.num_bikes_available}<br>
+                  🔌 Docks: ${status.num_docks_available}<br>
+                `;
+
+                const marker = L.circleMarker([station.lat, station.lon], {
+                  radius: 6,
+                  color: status.num_bikes_available > 0 ? 'green' : 'red',
+                  fillOpacity: 0.8
+                });
+
+                if (campusBounds.contains([station.lat, station.lon])) {
+                  markersLayer.addLayer(marker.bindPopup(popupContent));
+                }
+              });
+            });
+        });
+    }
+
+    fetchAndUpdateStations();
+    setInterval(fetchAndUpdateStations, 60000);
+  </script>
+</body>
+</html>
