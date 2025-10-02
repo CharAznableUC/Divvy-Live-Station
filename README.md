@@ -1,0 +1,1 @@
+This script tracks the live status of Divvy Bike Stations at University of Chicago Hyde Park Campus Area, it refreshes every 10 minutes and highlights numbers of Classics Bikes, E-Bikes, Scooters and docks.
