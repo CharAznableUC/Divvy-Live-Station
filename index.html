@@ -48,10 +48,10 @@
 
                 const popupContent = `
                   <strong>${station.name}</strong><br>
-                  🚲 Classics: ${status.num_bikes_available}<br>
+                  🚲 Classics Bikes: ${status.num_bikes_available}<br>
                   ⚡ E-bikes: ${status.num_ebikes_available ?? 'N/A'}<br>
                   🛴 Scooters: ${status.num_scooters_available ?? 'N/A'}<br>
-                  🔌 Docks: ${status.num_docks_available}<br>
+                  🔌 Open Docks: ${status.num_docks_available}<br>
                 `;
 
                 const marker = L.circleMarker([station.lat, station.lon], {
@@ -69,7 +69,7 @@
     }
 
     fetchAndUpdateStations();
-    setInterval(fetchAndUpdateStations, 60000);
+    setInterval(fetchAndUpdateStations, 30000);
   </script>
 </body>
 </html>
